@@ -1,0 +1,11 @@
+{
+    "sshfs.configs": [
+        {
+            "name": "Amazonec2",
+            "label": "popups",
+            "putty": true,
+            "host": "ec2-54-163-55-203.compute-1.amazonaws.com",
+            "privateKeyPath": "c:\\Users\\MORNING\\Downloads\\Atx-dev-key-pair.ppk"
+        }
+    ]
+}
