@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-%&1bt5bil(uw31q($ae^v2&i^8pyvvo!j7djfyw-6xf#6w4_ye
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.110']
+ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
@@ -59,7 +59,8 @@ ROOT_URLCONF = 'atxfloods.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'front'),
+                 os.path.join(BASE_DIR, 'admin-dashboard')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -135,7 +136,10 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'front', "static"),
+    os.path.join(BASE_DIR, 'admin-dashboard', 'static'),  # update the STATICFILES_DIRS
+)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = 'uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
