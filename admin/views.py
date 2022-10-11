@@ -4,7 +4,7 @@ from unicodedata import name
 from django.contrib.postgres.search import SearchVector
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
-
+from django.db.models import Q
 from atxfloods.settings import MEDIA_ROOT
 from .helpers import Helpers, auth, handle_csv_import
 from django.views.decorators.csrf import csrf_exempt
@@ -105,11 +105,9 @@ def all_crossings(request):
     elif status and not search:
         crossings = Crossing.objects.filter(status=int(status)).order_by('id')
     elif status and search:
-        crossings = Crossing.objects.annotate(search=SearchVector(
-            'name', 'address')).filter(status=int(status), search=search).order_by('id')
+        crossings = Crossing.objects.annotate.filter(Q(name__icontains=search) | Q(address__icontains=search) & Q(status=int(status))).order_by('id')
     elif not status and search:
-        crossings = Crossing.objects.annotate(search=SearchVector(
-            'name', 'address')).filter(search=search).order_by('id')
+        crossings = Crossing.objects.filter(Q(name__icontains=search) | Q(address__icontains=search)).order_by('id')
     paginator = Paginator(crossings, per_page)
     page_obj = paginator.get_page(page_number)
     crossings_json = Helpers.parse_crossings_json(page_obj)
