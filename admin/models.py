@@ -22,5 +22,5 @@ class Camera(models.Model):
 class Image(models.Model):
     camera_id = models.IntegerField(null=False)
     name = models.TextField(null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     updated_at = models.DateTimeField(auto_now=True)

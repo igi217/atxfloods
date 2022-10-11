@@ -14,7 +14,9 @@ urlpatterns = [
     path('crossings/update/<int:id>', views.update_crossing, name='update_crossing'),
     path('closures', views.closures, name='closures'),
     path('cameras/all', views.cameras, name='cameras'),
+    path('cameras/<int:id>', views.camera_single, name='camera_one'),
     path('cameras/create', views.cameras_create, name='cameras_create'),
     path('cameras/update/<int:id>', views.cameras_update, name='cameras_update'),
-    path('cameras/delete/<int:id>', views.cameras_delete, name='cameras_delete')
+    path('cameras/delete/<int:id>', views.cameras_delete, name='cameras_delete'),
+    path('cameras/upload', views.image_upload, name='camera.image_upload')
 ]

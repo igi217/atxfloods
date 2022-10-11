@@ -30,7 +30,7 @@ class Helpers:
 
         return data
 
-    def parse_cameras_json(page_obj):
+    def parse_cameras_json(page_obj, max_limit = 6):
         data = []
         for camera in page_obj:
             camera_dict = {
@@ -41,7 +41,7 @@ class Helpers:
                 'lat': camera.lat,
                 'lon': camera.lon,
                 'updated_at': camera.updated_at,
-                'images': parse_camera_images(camera.id)
+                'images': parse_camera_images(camera.id, max_limit)
             }
             data.append(camera_dict)
         return data
@@ -70,11 +70,11 @@ def auth(f):
     wrap.__name__ = f.__name__
     return wrap
 
-def parse_camera_images(camera_id):
+def parse_camera_images(camera_id, max_limit = -1):
     images = Image.objects.filter(camera_id = camera_id).order_by('-id')
     data = []
     for index, image in enumerate(images):
-        if index == 6 :
+        if index == max_limit :
             break
         image_dict = {
             'image_name' : image.name,

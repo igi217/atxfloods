@@ -4,11 +4,13 @@ from unicodedata import name
 from django.contrib.postgres.search import SearchVector
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
+
+from atxfloods.settings import MEDIA_ROOT
 from .helpers import Helpers, auth, handle_csv_import
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from .models import Crossing, Camera
+from .models import Crossing, Camera, Image
 from urllib.request import urlretrieve
 
 
@@ -194,15 +196,22 @@ def closures(request):
 @auth
 def cameras(request):
     cameras = Camera.objects.order_by('id')
-    per_page = request.GET.get('per_page') or 10
+    per_page = request.GET.get('per_page') or cameras.count()
     page_number = request.GET.get('page_number') or 1
 
     paginator = Paginator(cameras, per_page)
     page_obj = paginator.get_page(page_number)
     camera_json = Helpers.parse_cameras_json(page_obj)
-    return JsonResponse({'status': 200, 'message': 'Request Successfull!', 'totalResult':cameras.count(), 'attributes': camera_json})
+    return JsonResponse({'status': 200, 'message': 'Request Successfull!', 'totalResult': cameras.count(), 'attributes': camera_json})
 
-
+@csrf_exempt
+@auth
+def camera_single(request, id):
+    if request.method == 'GET':
+        return Helpers.request_method_error('GET')
+    camera = Camera.objects.filter(id = id)
+    camera_json = Helpers.parse_cameras_json(camera, max_limit = -1)
+    return JsonResponse({'status': 200, 'message': 'Request Successfull!', 'totalResult': camera.count(), 'attributes': camera_json})
 @csrf_exempt
 @auth
 def cameras_create(request):
@@ -247,3 +256,38 @@ def cameras_update(request, id):
 
     return JsonResponse({'status': 200, 'message': 'Record Updated'})
 
+
+@csrf_exempt
+def image_upload(request):
+    if request.method == 'GET':
+        return Helpers.request_method_error('GET')
+    camera_id = request.POST['camera_id']
+    created_at =  request.POST['created_at']
+    camera = Camera.objects.filter(unique_id=camera_id)
+    if (camera.count() >= 1):
+        id = camera.first().id
+        files = request.FILES
+        for name in files:
+            file = files[name];
+            handle_uploaded_file(file, name);
+
+            image = Image(
+                name = name,
+                camera_id = id,
+                created_at = created_at
+            )
+            image.save()
+            break;
+
+
+
+    else:
+        print('camers not exists')
+
+    return JsonResponse({'status': 200, 'message': 'Record Updated'})
+
+
+def handle_uploaded_file(file, name):
+    with open(MEDIA_ROOT + name, 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
